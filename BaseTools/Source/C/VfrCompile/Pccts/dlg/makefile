@@ -118,7 +118,7 @@ BUILD_CC?=gcc #cc doesn't include path to find stdio.h on macOS sometimes (depen
 COPT=-O
 ANTLR=${BIN_DIR}/antlr
 DLG=${BIN_DIR}/dlg
-BUILD_CFLAGS= $(COPT) -I. -I$(SET) -I$(PCCTS_H) -DUSER_ZZSYN -DZZLEXBUFSIZE=65536
+BUILD_CFLAGS= -std=gnu17 $(COPT) -I. -I$(SET) -I$(PCCTS_H) -DUSER_ZZSYN -DZZLEXBUFSIZE=65536
 BUILD_CPPFLAGS=
 OBJ_EXT=o
 OUT_OBJ = -o

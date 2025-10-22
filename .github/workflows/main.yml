@@ -6,40 +6,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-macos:
-    name: Build Clover Release
-    runs-on: macos-latest
+  build:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-
-      - name: Manage Version
-        run: |
-          git fetch --prune --unshallow --tags
-          echo "CUR_TAG=$(git tag -l | tail -1)" >> $GITHUB_ENV
-          echo "GIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
-      - name: Install Dependencies
-        run: brew install p7zip
-        env:
-          HOMEBREW_NO_INSTALL_CLEANUP: 1
-          HOMEBREW_NO_AUTO_UPDATE: 1
-
-      - name: Build Clover Pack
-        run: |
-          chmod +x ./buildme
-          ./buildme "" ci
-      - name: Prepare Release Packs
-        run: |
-          (cd "CloverPackage/CloverV2/EFI/CLOVER/" && zip -q "CLOVERX64.efi.zip" "CLOVERX64.efi" || exit 1)
-          (cd "CloverPackage/sym/CloverISO-${{ env.CUR_TAG }}" && 7z a Clover-${{ env.CUR_TAG }}-X64.iso.7z *.iso || exit 1)
-          releaseItems=(CloverPackage/sym/CloverISO*/*.7z CloverPackage/sym/CloverV2*.zip CloverPackage/CloverV2/EFI/CLOVER/CLOVERX64.efi.zip CloverPackage/sym/Clover_r*.pkg)
-          for releaseItem in "${releaseItems[@]}"; do cp -Rf "${releaseItem}" ./ || exit 1; done
+        with:
+          submodules: true
+      - run: sudo apt-get install uuid-dev nasm
+      - run: |
+          make
+          mkdir -p output
+          cp CloverPackage/CloverV2/BootSectors/boot0ss CloverPackage/CloverV2/BootSectors/boot1f32 Build/Clover/RELEASE_GCC131/FV/boot output/
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Clover-GCC-15.2.0-${{ env.GIT_SHA }}
+          name: Clover-Duet
           path: |
-            *.7z
-            CloverV2*.zip
-            CLOVERX64.efi.zip
-            Clover_r*.pkg
+            output/*

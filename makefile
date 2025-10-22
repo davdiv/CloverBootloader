@@ -2,7 +2,8 @@
 
 Clover:
 	@echo "Building Clover..."
-	@./ebuild.sh -gcc131 -D LESS_DEBUG -D NO_GRUB_DRIVERS_EMBEDDED >/dev/null
+	@make -C BaseTools/Source/C
+	@./ebuild.sh -gcc131 -D LESS_DEBUG -D NO_GRUB_DRIVERS_EMBEDDED
 	@echo [BUILD] "Clover " $Version.h
 
 clean:

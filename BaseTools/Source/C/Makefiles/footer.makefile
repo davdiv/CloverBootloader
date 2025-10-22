@@ -18,7 +18,7 @@ $(LIBRARY): $(OBJECTS)
 	$(BUILD_AR) crs $@ $^
 
 %.o : %.c 
-	$(BUILD_CC)  -c $(BUILD_CPPFLAGS) $(BUILD_CFLAGS) $< -o $@
+	$(BUILD_CC) -Wno-error=vla-parameter -Wno-error=stringop-overflow= -Wno-error=use-after-free -Wno-error=dangling-pointer= -Wno-error=stringop-truncation -c $(BUILD_CPPFLAGS) $(BUILD_CFLAGS) $< -o $@
 
 %.o : %.cpp
 	$(BUILD_CXX) -c $(BUILD_CPPFLAGS) $(BUILD_CXXFLAGS) $< -o $@

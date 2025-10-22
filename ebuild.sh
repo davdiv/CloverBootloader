@@ -470,7 +470,8 @@ MainBuildScript() {
     checkToolchain
 
  #   local repoRev=$(git describe --tags $(git rev-list --tags --max-count=1﻿))
-	local repoRev=$(git describe --tags --abbrev=0)
+	COMMIT_HASH="$(git rev-parse HEAD)"
+	local repoRev=$COMMIT_HASH
 
     #
     # we are building the same rev as before?
@@ -600,7 +601,7 @@ MainBuildScript() {
 
  #     local clover_revision=$(cat "${CLOVERROOT}/${VERSTXT}")     
  #     local clover_revision=$(git describe --tags $(git rev-list --tags --max-count=1))
-      local clover_revision=$(git describe --tags --abbrev=0)
+      local clover_revision=$COMMIT_HASH
       local clover_build_date=$(date '+%Y-%m-%d %H:%M:%S')
       #echo "#define FIRMWARE_VERSION \"2.31\"" > "$CLOVERROOT"/Version.h
 
@@ -615,17 +616,10 @@ MainBuildScript() {
 
       rev_date=$(git show -s --format=%ci $(git rev-parse HEAD))
       echo "#define REVISION_DATE \"${rev_date}\"" >> "$CLOVERROOT"/Version.h
-      COMMIT_HASH="$(git rev-parse HEAD)"
       echo "#define COMMIT_HASH \"$COMMIT_HASH\"" >> "$CLOVERROOT"/Version.h
       #build_id_date="$(date +%Y%m%d%H%M%S)"
       build_id_date="$(git show -s --format=%cd --date=format:%Y%m%d%H%M%S)"
-      number_of_commit="$(git rev-list tags/$(git describe --tags --abbrev=0)..HEAD --count)"
-      if [ $number_of_commit -gt 0 ]
-      then
-        build_id="$build_id_date"-"${COMMIT_HASH::7}"
-      else
-        build_id="$build_id_date"-"${COMMIT_HASH::7}"-"$clover_revision"
-      fi
+      build_id="$build_id_date"-"${COMMIT_HASH::7}"
       if [[ -n $(git status -s) ]]
       then
         build_id="$build_id"-dirty
